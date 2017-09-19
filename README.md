@@ -4,7 +4,7 @@ Udacity Data Analyst NanoDegree Project5 submission
 
 The objective of this Project is to use Machine Learning to identify persons of interest related to collapse of Enron in 2002.
 
-All project related files are kept in 'final_project' folder.  Here is the content and its description:
+This project uses various classifiers from python scikit learn package.  All project related files are kept in 'final_project' folder.  Here is the content and its description:
 
 **poi_id.py** --> Python script all steps from reading the data, to choosing the final classifier. It reads, cleans, created new features, compares different classifiers, tunes the parameters for chosen classifier, and finally outputs the selected classifier into .pkl files.
 

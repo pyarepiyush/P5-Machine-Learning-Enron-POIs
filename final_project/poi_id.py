@@ -325,7 +325,7 @@ test_run(pipe)
 
 print '--------------------------------------------------------------'
 print 'StandardScaler/GaussianNB'
-pipe = make_pipeline(preprocessing.StandardScaler(), GaussianNB())
+pipe = make_pipeline(StandardScaler(), GaussianNB())
 test_run(pipe)
 
 print '--------------------------------------------------------------'
@@ -335,7 +335,7 @@ test_run(pipe)
 
 print '--------------------------------------------------------------'
 print 'StandardScaler/SVM'
-pipe = make_pipeline(preprocessing.StandardScaler(), svm.SVC(C=10))
+pipe = make_pipeline(StandardScaler(), svm.SVC(C=10))
 test_run(pipe)
 
 print '--------------------------------------------------------------'
@@ -345,7 +345,7 @@ test_run(pipe)
 
 print '--------------------------------------------------------------'
 print 'StandardScaler/RandomForestClassifier'
-pipe = make_pipeline( preprocessing.StandardScaler(), RandomForestClassifier())
+pipe = make_pipeline(StandardScaler(), RandomForestClassifier())
 test_run(pipe)
 
 print '--------------------------------------------------------------'
