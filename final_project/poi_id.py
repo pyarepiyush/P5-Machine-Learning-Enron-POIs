@@ -9,6 +9,7 @@
 
 # ### 1. Define packages and import Enron data
 
+# In[1]:
 
 #!/usr/bin/python
 # Import packages
@@ -37,11 +38,11 @@ from tester import dump_classifier_and_data
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
     
-  
 
 
 # #### Create a list of initial features
 
+# In[3]:
 
 # all feature list
 features_list = data_dict['ALLEN PHILLIP K'].keys()
@@ -55,6 +56,7 @@ print features_list
 
 # #### Split dataset into labels and features
 
+# In[5]:
 
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
@@ -72,9 +74,34 @@ labels = numpy.asarray(labels)
 print 'Numpy Array features and labels: ',features.shape, labels.shape
 
 
+# In[40]:
+
+# Missing values in the datasets
+count=1
+count_nans={}
+for k,v in my_dataset.iteritems():
+    #print k
+    for j,k in v.iteritems(): 
+        #print j,k
+        if count==1:            
+            count_nans[j]=0
+            
+        # Define lists
+        if k=='NaN':
+            count_nans[j]+=1
+            #print count_nans
+    count+=1
+    
+count_nans      
+        
+    
+
+
 # ### 2. Remove Outliers
 # 
 # Create plots for some attributes to find outliers.
+
+# In[6]:
 
 # look for large outliers from the data
 plt.scatter(features[:,4], features[:,3])
@@ -84,6 +111,8 @@ plt.show()
 
 
 # There seems to be large outlier in the data. In the next step, we simply remove that outlier.
+
+# In[7]:
 
 # Extract index of large value for exercised stock options and delete it
 outlier = numpy.where(features[:,4] == features[:,4].max())[0][0]
@@ -96,6 +125,8 @@ labels = numpy.delete(labels,outlier, axis=0)
 print 'Dim of features and lables after removing outlier: ',features.shape,labels.shape
 
 
+# In[8]:
+
 # Check if large outliers from the data is removed
 plt.scatter(features[:,4], features[:,3])
 plt.xlabel("exercised_stock_options")
@@ -107,7 +138,9 @@ plt.show()
 # 
 # Next, run a decision tree on the entire dataset to identify important features. Only those features with importance score > .05 is kept
 
-# Look for important variables using decision tree
+# In[9]:
+
+# Look for important variables using decision tree 
 # Note that this step is done to recognise important varaible that we want
 # check outliers for
 from sklearn.model_selection import cross_val_score
@@ -134,6 +167,8 @@ print 'Kept features ---------->',features_list1
 
 
 # #### Recreate the dataset using important features selected
+
+# In[10]:
 
 ### ReExtract features and labels from dataset using the most important feature list
 data = featureFormat(my_dataset, features_list1, sort_keys = True)
@@ -165,48 +200,49 @@ print 'Dim of features and labels with important features only: ',features.shape
 # * **ratio_ex_stock_to_total_pmnt:** ratio of exercised_stock_options to total_payments
 # 
 
+# In[11]:
 
 ### Task 3: Create new feature(s)
 
 def new_features(ds):
     
     # ratio of bonus to exercised stock options
-    f1 = 0
-    f1 = ds[:,2]/ds[:,1]
-    f1[numpy.isnan(f1)] = 0 # Remove nan
-    f1[numpy.isinf(f1)] = 0 # Remove infinity
-    f1 = numpy.reshape(f1,(len(f1),1)) # Reshape Array
+    ratio_bonus_to_ex_stock = 0
+    ratio_bonus_to_ex_stock = ds[:,2]/ds[:,1]
+    ratio_bonus_to_ex_stock[numpy.isnan(ratio_bonus_to_ex_stock)] = 0 # Remove nan
+    ratio_bonus_to_ex_stock[numpy.isinf(ratio_bonus_to_ex_stock)] = 0 # Remove infinity
+    ratio_bonus_to_ex_stock = numpy.reshape(ratio_bonus_to_ex_stock,(len(ratio_bonus_to_ex_stock),1)) # Reshape Array
     
     # from_this_person_to_poi as % of from_messages
-    f2 = 0
-    f2 = ds[:,7]/ds[:,9]
-    f2[numpy.isnan(f2)] = 0 # Remove nan
-    f2[numpy.isinf(f2)] = 0 # Remove infinity
-    f2 = numpy.reshape(f2,(len(f2),1)) # Reshape Array
+    from_this_person_to_poi_pctof_from = 0
+    from_this_person_to_poi_pctof_from = ds[:,7]/ds[:,9]
+    from_this_person_to_poi_pctof_from[numpy.isnan(from_this_person_to_poi_pctof_from)] = 0 # Remove nan
+    from_this_person_to_poi_pctof_from[numpy.isinf(from_this_person_to_poi_pctof_from)] = 0 # Remove infinity
+    from_this_person_to_poi_pctof_from = numpy.reshape(from_this_person_to_poi_pctof_from,(len(from_this_person_to_poi_pctof_from),1)) # Reshape Array
     
     # from_poi_to_this_person as % of to_messages
-    f3 = 0
-    f3 = ds[:,8]/ds[:,10]
-    f3[numpy.isnan(f3)] = 0 # Remove nan
-    f3[numpy.isinf(f3)] = 0 # Remove infinity
-    f3 = numpy.reshape(f3,(len(f3),1)) # Reshape Array
+    from_poi_to_this_person_pctof_to = 0
+    from_poi_to_this_person_pctof_to = ds[:,8]/ds[:,10]
+    from_poi_to_this_person_pctof_to[numpy.isnan(from_poi_to_this_person_pctof_to)] = 0 # Remove nan
+    from_poi_to_this_person_pctof_to[numpy.isinf(from_poi_to_this_person_pctof_to)] = 0 # Remove infinity
+    from_poi_to_this_person_pctof_to = numpy.reshape(from_poi_to_this_person_pctof_to,(len(from_poi_to_this_person_pctof_to),1)) # Reshape Array
     
     # ratio of restricted_stock to total_payments
-    f4 = 0
-    f4 = ds[:,3]/ds[:,0]
-    f4[numpy.isnan(f4)] = 0 # Remove nan
-    f4[numpy.isinf(f4)] = 0 # Remove infinity
-    f4 = numpy.reshape(f4,(len(f4),1)) # Reshape Array
+    ratio_restrc_stock_to_total_pmnt = 0
+    ratio_restrc_stock_to_total_pmnt = ds[:,3]/ds[:,0]
+    ratio_restrc_stock_to_total_pmnt[numpy.isnan(ratio_restrc_stock_to_total_pmnt)] = 0 # Remove nan
+    ratio_restrc_stock_to_total_pmnt[numpy.isinf(ratio_restrc_stock_to_total_pmnt)] = 0 # Remove infinity
+    ratio_restrc_stock_to_total_pmnt = numpy.reshape(ratio_restrc_stock_to_total_pmnt,(len(ratio_restrc_stock_to_total_pmnt),1)) # Reshape Array
     
     # ratio of exercised_stock_options to total_payments
-    f5 = 0
-    f5 = ds[:,1]/ds[:,0]
-    f5[numpy.isnan(f5)] = 0 # Remove nan
-    f5[numpy.isinf(f5)] = 0 # Remove infinity
-    f5 = numpy.reshape(f5,(len(f5),1)) # Reshape Array
+    ratio_ex_stock_to_total_pmnt = 0
+    ratio_ex_stock_to_total_pmnt = ds[:,1]/ds[:,0]
+    ratio_ex_stock_to_total_pmnt[numpy.isnan(ratio_ex_stock_to_total_pmnt)] = 0 # Remove nan
+    ratio_ex_stock_to_total_pmnt[numpy.isinf(ratio_ex_stock_to_total_pmnt)] = 0 # Remove infinity
+    ratio_ex_stock_to_total_pmnt = numpy.reshape(ratio_ex_stock_to_total_pmnt,(len(ratio_ex_stock_to_total_pmnt),1)) # Reshape Array
     
     # Concatenate new features
-    return numpy.concatenate((ds,f1,f2,f3,f4,f5),axis = 1)
+    return numpy.concatenate((ds,ratio_bonus_to_ex_stock,from_this_person_to_poi_pctof_from,from_poi_to_this_person_pctof_to,ratio_restrc_stock_to_total_pmnt,ratio_ex_stock_to_total_pmnt),axis = 1)
     
 # Add new features to train and test sets
 features = new_features(features)
@@ -225,10 +261,11 @@ print 'Number of label and all features incl. new ones: ',len(features_list_updt
 
  
 print "--------------------------------"    
-    
 
 
 # #### Split the dataset with new features into train and test
+
+# In[12]:
 
 # Split into test/train datasets
 features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.30, random_state=42)
@@ -238,7 +275,7 @@ print 'Dim of test features and labels: ',labels_train.shape, labels_test.shape
 
 # #### Create a dictionary with overall data to be used as input for final testing
 
-import collections
+# In[13]:
 
 # Combine test/train, features/labels into one dataset 
 # This will later be passed to the test_classifier function
@@ -247,11 +284,7 @@ import collections
 #all_labels =  numpy.concatenate((labels_train,labels_test),axis = 0)
 
 all_ds = numpy.concatenate((labels,features), axis=1)
-print 'Shape of dataset: ',all_ds.shape
-print 'Shape of dataset: ',collections.Counter(all_ds[:,0])
-print 'Number of missing values', numpy.isnan(all_ds).sum()
-
-# Details about the dataset
+print all_ds.shape
 
 # Save the data in dictionary (cannot make this work!!!)
 #d = {i: {j: v for j, v in enumerate(row) if v}
@@ -267,16 +300,13 @@ for i, row in enumerate(all_ds):
     d[i] = temp
     
 
-    
-
 
 # 
 # ### 5. Try variety of transformations and classifiers to predict the POIs
 # 
-# Here, we use different combinations of transformations (SelectKBest, StandardScaler, PCA, etc.)
-# and different types of classifiers (GaussianNB, SVM, RandomForestClassifier, etc,.)
-# to select the best approach.
+# Here, we use different combinations of transformations (SelectKBest, StandardScaler, PCA, etc.) and different types of classifiers (GaussianNB, SVM, RandomForestClassifier, etc,.) to select the best approach.
 
+# In[15]:
 
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import ShuffleSplit
@@ -360,6 +390,7 @@ test_run(pipe)
 # 
 # After attempting to tune several different combinations, I settled with SelectKBest/RandomForestClassifier.
 
+# In[41]:
 
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
@@ -456,7 +487,7 @@ print 'Recall: %.2f' % (recall_score(labels_test,pred))
 # 
 # Extract the best combinaiton of parameters.
 
-
+# In[42]:
 
 print 'estimator --------->'
 print cv1.best_estimator_
@@ -473,7 +504,7 @@ print zip(feature_names[fs.get_support()], fs.scores_[fs.get_support()])
 
 # #### Dump classifier, dataset and features list into .pkl file
 
-
+# In[43]:
 
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
